@@ -1,33 +1,55 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import Puzzle from './components/Puzzle'
+import DefaultImage from './assets/default.jpg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+type PuzzleData = {
+  sides: number
+  imageSrc: string
+  status: number[]
+}
 
+const DefaultSides = 3
+
+function usePuzzleData() {
+  const [data, setData] = useState<PuzzleData>({
+    sides: DefaultSides,
+    imageSrc: DefaultImage,
+    status: Array(DefaultSides * DefaultSides)
+      .fill(1)
+      .map((_, i) => i),
+  })
+
+  const setStatus = (status: number[]) => {
+    if (
+      status.length === data.status.length &&
+      status.every((v, i) => v === data.status[i])
+    )
+      return
+
+    setData({ ...data, ...{ status } })
+  }
+  const setSides = (sides: number) => {
+    if (data.sides === sides) return
+    setData({ ...data, ...{ sides } })
+  }
+
+  return {
+    data,
+    setStatus,
+    setSides,
+  }
+}
+
+function App() {
+  const { data, setStatus } = usePuzzleData()
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <Puzzle
+      sides={data.sides}
+      imageSrc={data.imageSrc}
+      status={data.status}
+      setStatus={setStatus}
+    ></Puzzle>
   )
 }
 
