@@ -41,6 +41,11 @@ function usePuzzleData() {
     setData((data) => ({ ...data, ...{ isStarted: s } }))
   }
 
+  const setImageSrc = (src: string) => {
+    if (src === data.imageSrc) return
+    setData((data) => ({ ...data, ...{ imageSrc: src } }))
+  }
+
   const shuffle = () => {
     const sides = data.sides
     const positions: Array<Array<number>> = []
@@ -102,16 +107,19 @@ function usePuzzleData() {
     setStarted,
     reset,
     shuffle,
+    setImageSrc,
   }
 }
 
 function App() {
-  const { data, setStatus, setStarted, reset, shuffle } = usePuzzleData()
+  const { data, setStatus, setStarted, setImageSrc, reset, shuffle } =
+    usePuzzleData()
   return (
     <>
       <Operations
         data={data}
         setStarted={setStarted}
+        setImageSrc={setImageSrc}
         reset={reset}
         shuffle={shuffle}
       />
