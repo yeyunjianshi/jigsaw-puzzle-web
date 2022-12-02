@@ -5,6 +5,7 @@ type OperationsProp = {
   shuffle: () => void
   setStarted: (s: boolean) => void
   setImageSrc: (s: string) => void
+  setSides: (n: number) => void
   reset: () => void
 }
 
@@ -30,6 +31,7 @@ export default function Operations({
   shuffle,
   setStarted,
   setImageSrc,
+  setSides,
   reset,
 }: OperationsProp) {
   const fileRef = useRef<HTMLInputElement | null>()
@@ -54,6 +56,11 @@ export default function Operations({
   const resetHandler = () => {
     reset()
   }
+  const sidesChangeHandler = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSides(parseInt(e.target.value))
+    reset()
+  }
+
   return (
     <div className="button-group">
       <input
@@ -67,15 +74,24 @@ export default function Operations({
       <button className="button" onClick={selectPictureHandler}>
         选择图片
       </button>
+      <select
+        className="button"
+        onChange={sidesChangeHandler}
+        value={data.sides}
+      >
+        <option value="3">低</option>
+        <option value="4">中</option>
+        <option value="5">高</option>
+      </select>
+      <button className="button" onClick={resetHandler}>
+        重置
+      </button>
       <button
         className="button"
         onClick={startHandler}
         disabled={data.isStarted}
       >
         开始
-      </button>
-      <button className="button" onClick={resetHandler}>
-        重置
       </button>
     </div>
   )

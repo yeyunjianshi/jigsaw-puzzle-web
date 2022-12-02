@@ -20,8 +20,12 @@ function usePuzzleData() {
     emptyIndex: DefaultSides * DefaultSides - 1,
   })
 
-  const setStatus = (status: number[]) => {
+  const setStatus = (status: number[], checkFinished = true) => {
     if (equalArray(status, data.status)) return
+
+    if (checkFinished && equalArray(status, startStatusFunc(data.sides))) {
+      alert('恭喜您成功完成了！！！')
+    }
 
     setData((data) => ({
       ...data,
@@ -34,7 +38,10 @@ function usePuzzleData() {
   }
   const setSides = (sides: number) => {
     if (data.sides === sides) return
-    setData({ ...data, ...{ sides, emptyIndex: sides * sides - 1 } })
+    setData((data) => ({
+      ...data,
+      ...{ sides, emptyIndex: sides * sides - 1 },
+    }))
   }
 
   const setStarted = (s: boolean) => {
@@ -88,16 +95,15 @@ function usePuzzleData() {
       ret.push(...v)
       return ret
     }, [])
-    console.log(status)
 
-    setStatus(status)
+    setStatus(status, false)
   }
 
   const reset = () => {
-    setData({
+    setData((data) => ({
       ...data,
       ...{ isStarted: false, status: startStatusFunc(data.sides) },
-    })
+    }))
   }
 
   return {
@@ -112,7 +118,7 @@ function usePuzzleData() {
 }
 
 function App() {
-  const { data, setStatus, setStarted, setImageSrc, reset, shuffle } =
+  const { data, setStatus, setStarted, setImageSrc, setSides, reset, shuffle } =
     usePuzzleData()
   return (
     <>
@@ -120,6 +126,7 @@ function App() {
         data={data}
         setStarted={setStarted}
         setImageSrc={setImageSrc}
+        setSides={setSides}
         reset={reset}
         shuffle={shuffle}
       />

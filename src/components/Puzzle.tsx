@@ -145,8 +145,6 @@ const Puzzle = ({ puzzleData, setStatus }: PuzzleProps) => {
 
   useEffect(() => {}, [length])
 
-  console.log(puzzleData.status)
-
   const clickHandler = (element: HTMLElement, partData: PuzzlePart) => {
     if (!puzzleData.isStarted || isSlidingAnimationRef.current) return
 
