@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { distance, lerp, lerpVector2 } from '../util'
+import { distance, lerpVector2 } from '../util'
 
 type PuzzleProps = {
-  sides?: number
-  imageSrc: string
-  status: number[]
+  puzzleData: PuzzleData
   setStatus?: (status: number[]) => void
 }
 type PuzzleState = {
@@ -81,7 +79,7 @@ function getImageParts(
 }
 
 const DefaultPuzzleContinerLength = 600
-const DefaultSlideAnimationSpeed = 600
+const DefaultSlideAnimationSpeed = 1200
 
 function slideAnimation(
   element: HTMLElement,
@@ -122,37 +120,46 @@ function positionToCoord(index: number, sides: number): Vector2 {
   return [index % sides, Math.floor(index / sides)]
 }
 
-const Puzzle = ({ sides = 3, imageSrc, setStatus, status }: PuzzleProps) => {
+const Puzzle = ({ puzzleData, setStatus }: PuzzleProps) => {
   const isSlidingAnimationRef = useRef(false)
-  const [data, setData] = useState<PuzzleState>({ sides, data: [] })
+  const [data, setData] = useState<PuzzleState>({
+    sides: puzzleData.sides,
+    data: [],
+  })
   const [length, setLength] = useState(DefaultPuzzleContinerLength)
-  const partLength = length / sides
+  const partLength = length / puzzleData.sides
 
   useEffect(() => {
-    loadImage(imageSrc)
+    loadImage(puzzleData.imageSrc)
       .then((image) => {
-        setData({ sides, image, data: getImageParts(image, sides) })
+        setData({
+          sides: puzzleData.sides,
+          image,
+          data: getImageParts(image, puzzleData.sides),
+        })
       })
       .catch((e) => {
         console.log(e)
       })
-  }, [sides, imageSrc])
+  }, [puzzleData.sides, puzzleData.imageSrc])
 
   useEffect(() => {}, [length])
 
+  console.log(puzzleData.status)
+
   const clickHandler = (element: HTMLElement, partData: PuzzlePart) => {
-    if (isSlidingAnimationRef.current) return
+    if (!puzzleData.isStarted || isSlidingAnimationRef.current) return
 
     const emptyPartData = data.data.find((d) => d.isEmpty)
     if (!emptyPartData) throw new Error(`Program Error: Please Reset`)
 
     const emptyCoord = positionToCoord(
-      status.findIndex((n) => n === emptyPartData.index) as number,
-      sides
+      puzzleData.status.findIndex((n) => n === emptyPartData.index) as number,
+      puzzleData.sides
     )
     const partCoord = positionToCoord(
-      status.findIndex((n) => n === partData.index) as number,
-      sides
+      puzzleData.status.findIndex((n) => n === partData.index) as number,
+      puzzleData.sides
     )
 
     if (distance(emptyCoord, partCoord) === 1) {
@@ -162,7 +169,7 @@ const Puzzle = ({ sides = 3, imageSrc, setStatus, status }: PuzzleProps) => {
       ]
       isSlidingAnimationRef.current = true
       slideAnimation(element, [0, 0], targetPosition, () => {
-        const slideAfterStatus = status.map((v) =>
+        const slideAfterStatus = puzzleData.status.map((v) =>
           v === partData.index
             ? emptyPartData.index
             : v === emptyPartData.index
@@ -180,7 +187,7 @@ const Puzzle = ({ sides = 3, imageSrc, setStatus, status }: PuzzleProps) => {
       className="container"
       style={{ width: `${length}px`, height: `${length}px` }}
     >
-      {status.map((num) => {
+      {puzzleData.status.map((num) => {
         const partData = data.data.find((d) => d.index === num)
 
         if (!partData) return null
@@ -188,8 +195,8 @@ const Puzzle = ({ sides = 3, imageSrc, setStatus, status }: PuzzleProps) => {
           <li
             key={`{Date()}${Math.random()}}`}
             style={{
-              width: `${length / sides}px`,
-              height: `${length / sides}px`,
+              width: `${length / puzzleData.sides}px`,
+              height: `${length / puzzleData.sides}px`,
               translate: '0px 0px',
             }}
             onClick={(event) => clickHandler(event.currentTarget, partData)}

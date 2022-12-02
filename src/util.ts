@@ -24,4 +24,12 @@ export function lerp(start: number, end: number, amt: number): number {
   return start + amt * Math.sign(end - start)
 }
 
+export function equalArray<T extends number | string = number>(a: T[], b: T[]) {
+  return a.length === b.length && a.every((v, i) => v === b[i])
+}
+
+export function vector2Add(a: Vector2, b: Vector2): Vector2 {
+  return [a[0] + b[0], a[1] + b[1]]
+}
+
 export default {}
