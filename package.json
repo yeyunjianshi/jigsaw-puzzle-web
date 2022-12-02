@@ -1,15 +1,17 @@
 {
-  "name": "game",
+  "name": "jigsaw-puzzle-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "echo 'test success'",
     "preview": "vite preview",
     "format": "prettier --cache --write --parser typescript src/**.ts?(x)",
     "format-check": "prettier --cache --check --parser typescript src/**.ts?(x)",
     "lint": "eslint --cache --ext .ts,.tsx src/**.ts?(x)",
+    "deploy": "./deploy.sh",
     "prepare": "husky install"
   },
   "dependencies": {
